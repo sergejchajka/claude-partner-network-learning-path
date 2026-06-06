@@ -1,0 +1,32 @@
+[
+  {
+    "test_case": {
+      "task": "Parse a raw CloudWatch Logs log line to extract the timestamp (format: YYYY/MM/DD HH:MM:SS.sss), the log level (ERROR, WARN, INFO), and the service name enclosed in brackets.",
+      "format": "regex",
+      "solution_criteria": "The regex must capture the ISO-like timestamp, the capitalized severity level, and the alphanumeric service identifier within square brackets, ignoring the rest of the JSON or text context."
+    },
+    "score": 8.0,
+    "output": "\n(\\d{4}\\/\\d{2}\\/\\d{2}\\s+\\d{2}:\\d{2}:\\d{2}\\.\\d{3})\\s+\\[(INFO|WARN|ERROR)\\]\\s+\\[(.*?)\\]\n",
+    "reasoning": "The solution meets the immediate requirements by capturing the three specified fields. However, it lacks robustness against common CloudWatch log timestamp variations and does not validate the structure of the service name effectively."
+  },
+  {
+    "test_case": {
+      "task": "Convert a provided AWS IAM User object dictionary into a flattened JSON structure containing only 'UserName', 'UserId', 'Arn', 'CreateDate', and 'PasswordLastUsed'.",
+      "format": "json",
+      "solution_criteria": "The output must be a valid, minimal JSON string (no Python print statements) that strictly includes only the five specified fields mapped from the input."
+    },
+    "score": 7.0,
+    "output": "\n{\n  \"UserName\": \"example-user\",\n  \"UserId\": \"AIDAI2EXAMPLE\",\n  \"Arn\": \"arn:aws:iam::123456789012:user/example-user\",\n  \"CreateDate\": \"2020-01-01T12:00:00Z\",\n  \"PasswordLastUsed\": null\n}\n",
+    "reasoning": "While the output format strictly adheres to the constraints (minimal JSON, specific fields), the solution fails as a functional program because it does not actually implement the conversion logic for a provided input. It only demonstrates what the output *should* look like, not how to achieve it programmatically."
+  },
+  {
+    "test_case": {
+      "task": "Write a single Python function using only built-in standard library modules to validate if a given IAM Role ARN follows the correct AWS ARN format for a specific region and service.",
+      "format": "python",
+      "solution_criteria": "The code must use string methods or regex from the 're' module to verify the ARN structure (arn:aws:<service>:<region>:<account-id>:role/<name>) without importing external packages like boto3."
+    },
+    "score": 8.0,
+    "output": "\nimport re\n\ndef validate_iam_role_arn(arn: str) -> bool:\n    pattern = (\n        r\"^arn:aws\"                          # Partitions for standard AWS\n        r\":(us-east-1|[a-z]{2}-[a-z]+-[0-9]+)\"  # Region (e.g., us-east-1, eu-west-2)\n        r\":iam\"                              # Service name\n        r\":role\"                             # Resource type\n        r\":([a-z0-9-_]+\\/?)([^:]*):([a-z0-9-_.]+)$\"  # Account ID, Role Name, ARN\n    )\n    return bool(re.fullmatch(pattern, arn))\n",
+    "reasoning": "The solution demonstrates a good understanding of using regex for structural validation and adheres to library constraints. However, the actual logic within the `re.fullmatch` pattern contains significant flaws: it fails to correctly parse the role name component due to the optional slash and loose character matching, and allows invalid characters in the account ID."
+  }
+]

@@ -1,0 +1,17 @@
+[
+  {
+    "task": "Generate a regular expression pattern that matches AWS CloudWatch Log Stream names which must start with 'aws-logs-v2/' and contain exactly one hyphenated identifier before the '/0/' suffix.",
+    "format": "regex",
+    "solution_criteria": "The regex must strictly enforce the prefix 'aws-logs-v2/', allow a flexible but valid alphanumeric/hyphenated segment, and end with '/0/'. It should use standard quantifiers to avoid matching multiple identifiers or missing the required suffix."
+  },
+  {
+    "task": "Create a JSON object representing an AWS IAM Role configuration for an EC2 instance that needs S3 read-only access to a specific bucket 'data-lake' and CloudWatch Logs full access.",
+    "format": "json",
+    "solution_criteria": "The JSON object must define the Role's Arn, a unique RoleName, and a Policies array. The policies must include one statement for s3:GetObject/GetObjectAcl on the specific bucket ARN and another for logs:CreateLogStream/logs:DescribeLogEvents on 'log-groups:*'. All required IAM policy fields (Effect, Action, Resource) must be present and correctly formatted."
+  },
+  {
+    "task": "Write a Python function that takes an AWS Region string (e.g., 'us-east-1') as input and returns the corresponding AWS Availability Zone availability status code based on a hardcoded map of known healthy zones for that region.",
+    "format": "python",
+    "solution_criteria": "The function must take a single string argument. It should contain a dictionary mapping regions to lists of AZs or return a specific integer/status code indicating if the input AZ is valid for that region. The logic should be contained entirely within this single function without external imports or database calls."
+  }
+]

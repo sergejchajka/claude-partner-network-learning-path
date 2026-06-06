@@ -1,0 +1,29 @@
+[
+  {
+    "test_case": {
+      "task": "Validate that an AWS IAM policy JSON string contains all required fields: 'Version', 'Statement', and at least one object with keys 'Effect' and 'Action'.",
+      "format": "python"
+    },
+    "score": 8.5,
+    "output": "\nimport json\n\ndef validate_iam_policy(policy_str):\n    try:\n        policy = json.loads(policy_str)\n        \n        # Check for top-level keys\n        if 'Version' not in policy:\n            return False\n        if 'Statement' not in policy:\n            return False\n        \n        statements = policy['Statement']\n        \n        # Ensure Statement is a list (standard AWS format) or has at least one valid statement\n        if isinstance(statements, list):\n            count = 0\n            for stmt in statements:\n                if 'Effect' not in stmt or 'Action' not in stmt:\n                    continue\n                count += 1\n            return count > 0\n        elif isinstance(statements, dict):\n             # Handle legacy format where Statement is a single object or list of dicts\n             if isinstance(statements, list):\n                 for stmt in statements:\n                     if 'Effect' not in stmt or 'Action' not in stmt:\n                         continue\n                     return True\n             else:\n                  if 'Effect' not in statements or 'Action' not in statements:\n                      return False\n                  \n        return False\n    except json.JSONDecodeError:\n        return False\n\n# Example usage for validation logic demonstration\nif __name__ == \"__main__\":\n    policy = {\n        \"Version\": \"2012-10-17\",\n        \"Statement\": [\n            {\n                \"Effect\": \"Allow\",\n                \"Action\": [\"s3:GetObject\"],\n                \"Resource\": \"*\"\n            }\n        ]\n    }\n    \n    valid = validate_iam_policy(json.dumps(policy))\n    print(valid) # Should output True\n",
+    "reasoning": "The solution demonstrates strong core logic by supporting both modern and legacy IAM policy formats and handling errors effectively. However, it lacks deeper validation on field types or constraints beyond key existence, limiting its robustness for production-grade usage."
+  },
+  {
+    "test_case": {
+      "task": "Convert a flat AWS resource mapping (e.g., {'BucketName': 'my-bucket-123', 'InstanceID': 'i-abc123'}) into a nested JSON structure grouping resources by type (S3, EC2) with specific metadata.",
+      "format": "json"
+    },
+    "score": 7.0,
+    "output": "\n[\n  {\n    \"S3\": {\n      \"BucketName\": \"my-bucket-123\",\n      \"ResourceType\": \"s3\",\n      \"ARN\": \"arn:aws:s3:::my-bucket-123\"\n    }\n  },\n  {\n    \"EC2\": {\n      \"InstanceID\": \"i-abc123\",\n      \"ResourceType\": \"ec2\",\n      \"PublicDNS\": null,\n      \"State\": \"running\"\n    }\n  }\n]\n",
+    "reasoning": "The solution demonstrates the correct structural pattern for nesting resources by type but fails to provide a dynamic, reusable transformation logic. It treats the output as a static example rather than a scriptable conversion of the input data."
+  },
+  {
+    "test_case": {
+      "task": "Extract the Region code and Account ID from an AWS ARN string formatted as 'arn:aws:<service>:<region>:<account-id>:resource'.",
+      "format": "regex"
+    },
+    "score": 3.5,
+    "output": "\narn:aws:[^:]+:(?<Region>[a-z\\-0-9]+):(?<Account>\\d{12}):\n",
+    "reasoning": "The regex successfully parses the Account ID and separates fields effectively. However, it lacks capturing groups for the Region (making extraction difficult in code) and assumes the 'aws' partition prefix without supporting other AWS partitions like 'aws-cn' or 'aws-us-gov', reducing its robustness across different AWS environments."
+  }
+]

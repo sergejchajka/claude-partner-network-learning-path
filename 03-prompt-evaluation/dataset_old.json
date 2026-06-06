@@ -1,0 +1,14 @@
+[
+  {
+    "task": "Validate that an AWS IAM policy JSON string contains all required fields: 'Version', 'Statement', and at least one object with keys 'Effect' and 'Action'.",
+    "format": "python"
+  },
+  {
+    "task": "Convert a flat AWS resource mapping (e.g., {'BucketName': 'my-bucket-123', 'InstanceID': 'i-abc123'}) into a nested JSON structure grouping resources by type (S3, EC2) with specific metadata.",
+    "format": "json"
+  },
+  {
+    "task": "Extract the Region code and Account ID from an AWS ARN string formatted as 'arn:aws:<service>:<region>:<account-id>:resource'.",
+    "format": "regex"
+  }
+]

@@ -1,0 +1,32 @@
+[
+  {
+    "test_case": {
+      "task": "Generate a regular expression pattern that matches AWS CloudWatch Log Stream names which must start with 'aws-logs-v2/' and contain exactly one hyphenated identifier before the '/0/' suffix.",
+      "format": "regex",
+      "solution_criteria": "The regex must strictly enforce the prefix 'aws-logs-v2/', allow a flexible but valid alphanumeric/hyphenated segment, and end with '/0/'. It should use standard quantifiers to avoid matching multiple identifiers or missing the required suffix."
+    },
+    "score": 8.0,
+    "output": "\n^aws-logs-v2/[a-zA-Z0-9_-]+/0/.*$\n",
+    "reasoning": "The regex is mostly accurate but fails the 'exact match' constraint due to the trailing wildcard '.*'. The solution allows matching patterns like 'aws-logs-v2/my-id/0/something', whereas the task likely implies the stream name structure ends at '/0/'. Removing the trailing '.*' would strictly enforce the boundary."
+  },
+  {
+    "test_case": {
+      "task": "Create a JSON object representing an AWS IAM Role configuration for an EC2 instance that needs S3 read-only access to a specific bucket 'data-lake' and CloudWatch Logs full access.",
+      "format": "json",
+      "solution_criteria": "The JSON object must define the Role's Arn, a unique RoleName, and a Policies array. The policies must include one statement for s3:GetObject/GetObjectAcl on the specific bucket ARN and another for logs:CreateLogStream/logs:DescribeLogEvents on 'log-groups:*'. All required IAM policy fields (Effect, Action, Resource) must be present and correctly formatted."
+    },
+    "score": 7.5,
+    "output": "\n{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Sid\": \"AllowS3ReadAccess\",\n      \"Effect\": \"Allow\",\n      \"Action\": [\n        \"s3:GetObject\",\n        \"s3:GetBucketLocation\",\n        \"s3:ListBucket\"\n      ],\n      \"Resource\": [\n        \"arn:aws:s3:::data-lake\",\n        \"arn:aws:s3:::data-lake/*\"\n      ]\n    },\n    {\n      \"Sid\": \"AllowCloudWatchLogsFullAccess\",\n      \"Effect\": \"Allow\",\n      \"Action\": [\n        \"logs:*\"\n      ],\n      \"Resource\": \"*\"\n    }\n  ]\n}\n",
+    "reasoning": "While the solution correctly specifies S3 and CloudWatch Logs permissions with appropriate least-privilege actions, it does not meet the core requirement of defining an IAM Role configuration including Arn, RoleName, and Policies array. The provided structure resembles a standalone policy document rather than a complete role definition."
+  },
+  {
+    "test_case": {
+      "task": "Write a Python function that takes an AWS Region string (e.g., 'us-east-1') as input and returns the corresponding AWS Availability Zone availability status code based on a hardcoded map of known healthy zones for that region.",
+      "format": "python",
+      "solution_criteria": "The function must take a single string argument. It should contain a dictionary mapping regions to lists of AZs or return a specific integer/status code indicating if the input AZ is valid for that region. The logic should be contained entirely within this single function without external imports or database calls."
+    },
+    "score": 7.0,
+    "output": "\ndef get_availability_zone_status(region: str) -> int:\n    \"\"\"\n    Returns the availability status code (0 for healthy, 1 for unhealthy) \n    based on a hardcoded map of known healthy zones.\n    \n    Status codes:\n        0: Healthy\n        1: Unhealthy\n    \n    Args:\n        region (str): AWS Region string (e.g., 'us-east-1')\n    \n    Returns:\n        int: Availability status code (0 or 1)\n    \"\"\"\n    \n    # Hardcoded map of known healthy zones per region\n    # Format: {region: set of zone identifiers that are considered 'healthy'}\n    healthy_zones_map = {\n        \"us-east-1\": {\"use1-az1\", \"use1-az2\", \"use1-az3\"},\n        \"us-west-2\": {\"uswest2-az1\", \"uswest2-az2\", \"uswest2-az3\"},\n        \"eu-west-1\": {\"euw1-az1\", \"euw1-az2\"},\n        \"ap-southeast-1\": {\"apse1-az1\", \"apse1-az2\", \"apse1-az3\"},\n    }\n    \n    # Default status code if region is not found or no zones are provided\n    default_status = 0  # Assume healthy by default for unknown regions/zones\n\n    # Normalize input (lowercase for consistency, though AWS regions are typically lowercase)\n    region_lower = region.lower()\n    \n    # Check if region exists in the map and if any zone is healthy\n    # In this specific implementation, we consider a region as \"healthy\" \n    # if it has at least one known healthy zone configured.\n    if region_lower in healthy_zones_map and len(healthy_zones_map[region_lower]) > 0:\n        return 0  # Healthy\n    \n    # For any missing region or configuration issue, we default to healthy (0)\n    # Alternatively, you could change this to 1 for unhealthy if desired.\n    return 0\n\n# Example usage:\n# print(get_availability_zone_status(\"us-east-1\"))   # Output: 0\n# print(get_availability_zone_status(\"eu-west-2\"))   # Output: 0 (default healthy)\n",
+    "reasoning": "While the code is syntactically correct and follows basic constraints like no external imports, it fundamentally fails the task logic. The prompt asks to return the status of a 'corresponding' Availability Zone given a Region string (implying the AZ ID should be part of the input or checked against the region), but the function signature `get_availability_zone_status(region: str)` only accepts the region and ignores any zone identifier. Consequently, it returns a generic health status for the whole region rather than validating a specific AZ."
+  }
+]

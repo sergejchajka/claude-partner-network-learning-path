@@ -2,4 +2,8 @@
 name = "claude-partner-network-learning-path"
 version = "0.1.0"
 requires-python = ">=3.14"
-dependencies = []
+dependencies = [
+    "anthropic>=0.105.2",
+    "ipykernel>=7.2.0",
+    "python-dotenv>=1.2.2",
+]
